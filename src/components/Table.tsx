@@ -4,9 +4,14 @@ import Client from '@/core/Client';
 
 interface TableProps {
 	clients: Client[];
+	selectedClient?: (client: Client) => void;
+	deletedClient?: (client: Client) => void;
 }
 
 export default function Table(props: TableProps) {
+
+	const showActions = props.selectedClient || props.deletedClient;
+
 	function renderTableHeader() {
 		const classes = "text-left p-4";
 		return (
@@ -18,25 +23,35 @@ export default function Table(props: TableProps) {
 					<th className={`${classes}`}>Code</th>
 					<th className={`${classes}`}>Name</th>
 					<th className={`${classes}`}>Age</th>
-					<th className={`${classes} text-center`}>Actions</th>
+					{ showActions && <th className={`${classes} text-center`}>Actions</th> }
 				</tr>
 			</thead>
 		);
 	}
 
 	function renderActions(client: Client) {
+		const defaultClasses = `
+			flex justify-center items-center p-2 m-1
+			rounded-full hover:bg-purple-50
+		`;
 		return (
-			<td className={`text-center flex`}>
-				<button className={`
-					flex justify-center items-center p-2 m-1
-					text-green-600 rounded-full 
-					hover:bg-purple-50
-				`}>
-					{ IconEdit }
-				</button>
-				<button className={`flex justify-center items-center`}>
-					{ IconDelete }
-				</button>
+			<td className={`text-center flex justify-center`}>
+				{
+					props.selectedClient && 
+					<button 
+						className={`text-green-600 ${defaultClasses}`}
+						onClick={ () => props.selectedClient?.(client) }>
+						{ IconEdit }
+					</button>
+				}
+				{
+					props.deletedClient && 
+					<button 
+						className={`text-red-600 ${defaultClasses}`}
+						onClick={ () => props.deletedClient?.(client) }>
+						{ IconDelete }
+					</button>
+				}
 			</td>
 		);
 	}
@@ -50,7 +65,7 @@ export default function Table(props: TableProps) {
 					<td className={`${classes}`}>{ client.id }</td>
 					<td className={`${classes}`}>{ client.name }</td>
 					<td className={`${classes}`}>{ client.age }</td>
-					{ renderActions() }
+					{ showActions && renderActions(client) }
 				</tr>
 			)
 		);

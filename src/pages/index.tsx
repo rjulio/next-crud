@@ -1,16 +1,28 @@
+// import { useEffect, useState } from 'react';
+
 import Layout from '@/components/Layout';
 import Table from '@/components/Table';
+import Button from '@/components/Button';
+import Form from '@/components/Form';
 
-import Client from '@/core/Client';
+// import Client from '@/core/Client';
+// import ClientRepo from '@/core/ClientRepo';
+// import ClientCollection from '@/backend/db/ClientCollection';
+
+import useClients from '@/hooks/useClients';
 
 export default function Home() {
-
-  const clients = [
-    new  Client('Ana', 23, 1),
-    new  Client('Bia', 45, 2),
-    new  Client('Carlos', 40, 3),
-    new  Client('Pedro', 25, 4),
-  ];
+  const { 
+    newClient, 
+    selectedClient, 
+    deletedClient, 
+    saveClient, 
+    client, 
+    clients, 
+    isFormVisible, 
+    isTableVisible,
+    showTable
+  } = useClients();
 
   return (
     <div className={`
@@ -19,7 +31,32 @@ export default function Home() {
       text-white
     `}>
       <Layout title="Cadastro simples">
-        <Table clients={clients} />
+
+        { isTableVisible && 
+          <>
+            <div className="flex justify-end">
+              <Button 
+                color="green" 
+                className="mb-4"
+                onClick={ newClient }>
+                Novo cliente
+              </Button>
+            </div>
+            
+            <Table 
+              clients={clients}
+              selectedClient={ selectedClient }
+              deletedClient={ deletedClient } />
+          </>
+        }
+
+        {
+          isFormVisible && 
+          <Form 
+            client={ client }
+            canceled={ showTable }
+            changed={ saveClient } />
+        }
       </Layout>
     </div>
   );
